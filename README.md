@@ -17,7 +17,7 @@ The application uses viem's implementation of EIP-7702 for account abstraction a
 ## Setup and Installation
 
 ### Prerequisites
-- Node.js (v16 or higher)
+- Node.js (v16 or higher. >=18 recommended)
 - npm or yarn
 - MetaMask browser extension
 
