@@ -56,9 +56,11 @@ yarn dev
 
 The application interacts with the following contracts on the Hoodi testnet:
 
-- **Alchemist**: `0x8b8d2eFB5Fc6B016A67B94c89493545D5271C992`
+- **Alchemist V2**: `0x8b8d2eFB5Fc6B016A67B94c89493545D5271C992`
 - **BatchCallAndSponsor**: `0x68545eceD4C6552cDc5AEc36177068D2BE12A101`
 - **Test Yield Token**: `0x703bD932493Ad379075fA8aaC36518A3D6330B88`
+
+The `BatchCallAndSponsor` contract allows for EIP7702 batch & sponsored transactions. More [here](https://github.com/quiknode-labs/qn-guide-examples/blob/main/ethereum/eip-7702/src/BatchCallAndSponsor.sol).
 
 ## Hoodi Public Testnet Information
 
