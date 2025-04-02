@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alchemist Deposit App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            background-color: #f7f7f7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 10px 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border-left: 6px solid #2196F3;
+        }
+        #balanceDisplay {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        input {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Paymaster</h1>
+    <h3>Alchemist EIP 7702 test</h3>
+
+    <div>
+        <button id="connectWallet">Connect Wallet</button>
+    </div>   
+    
+    <div class="container">
+         
+        <div>
+            <label for="depositAmount">Deposit Amount:</label>
+            <input type="number" id="depositAmount" placeholder="Enter amount to deposit">
+        </div>
+        
+  
+        <div>
+            <button id="deposit">Deposit</button>
+     
+        </div>
+        
+        
+        <div>
+            <div>
+                <button id="sponsorDeposit">Sponsor Deposit</button>
+            </div>
+            <pre id="authorizationHash" style="word-break: break-all; display: none;"></pre>
+        </div>
+        
+        <div class="info">
+            <p>Connected Account: <span id="accountDisplay">Not connected</span></p>
+            <p>Total Value: <span id="balanceDisplay">-</span></p>
+            <p>Transaction Status: <span id="txStatus">-</span></p>
+        </div>
+        <div>
+            <button id="viewBalance">Total Value</button>
+        </div>
+    </div>
+    
+    <script type="module" src="/src/app.js"></script>
+</body>
+</html> 
