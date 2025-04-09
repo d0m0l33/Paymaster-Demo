@@ -39,6 +39,12 @@
             background-color: #e7f3fe;
             border-left: 6px solid #2196F3;
         }
+        .sponsorInfo {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e7f3fe;
+            border-left: 6px solid #d021f3;
+        }
         #balanceDisplay {
             font-size: 18px;
             font-weight: bold;
@@ -52,11 +58,56 @@
         label {
             font-weight: bold;
         }
+        .header-container {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .header-column {
+            display: inline-block;
+            vertical-align: top;
+        }
+        .header-column:first-child {
+            width: 40%;
+            margin-right: 20px;
+        }
+        .header-column:last-child {
+            width: 60%;
+        }
+        .header {
+            margin-top: 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+        }
+        .header p {
+            margin: 5px 0;
+        }
+        .header strong {
+            color: #333;
+        }
     </style>
 </head>
 <body>
-    <h1>Paymaster</h1>
-    <h3>Alchemist EIP 7702 test</h3>
+    <div>
+        <div class="header-container">
+            <div class="header-column">
+                <h1>Paymaster</h1>
+                <h4>Alchemist EIP 7702 test</h4>
+            </div>
+            <div class="header-column">
+                <div class="header">
+                    <p><strong>Contract Addresses:</strong></p>
+                    <p>Alchemist: <span id="headerAlchemistAddress">-</span></p>
+                    <p>Yield Token: <span id="headerYieldTokenAddress">-</span></p>
+                    <p>Relayer: <span id="headerRelayerAddress">-</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div>
         <button id="connectWallet">Connect Wallet</button>
@@ -72,25 +123,34 @@
   
         <div>
             <button id="deposit">Deposit</button>
-     
+                <button id="relayerDeposit">Sponsor Deposit</button>
+                <button id="relayerDepositEIP7702Adjusted" style="background-color: #8A2BE2;">Sponsor Deposit (Smart Account Blocked)</button>            
         </div>
-        
-        
         <div>
+         
             <div>
-                <button id="sponsorDeposit">Sponsor Deposit</button>
+                <button id="viewBalance">Total Shares</button>
             </div>
-            <pre id="authorizationHash" style="word-break: break-all; display: none;"></pre>
         </div>
         
         <div class="info">
+            <h3>Account Info</h3>
             <p>Connected Account: <span id="accountDisplay">Not connected</span></p>
-            <p>Total Value: <span id="balanceDisplay">-</span></p>
+            <p>Total Shares in Alchemist: <span id="balanceDisplay">-</span></p>
+            <p>Balance : <span id="userETHBalanceDisplay">-</span></p>
+
+            <p>Yield Token Balance: <span id="userYieldBalanceDisplay">-</span></p>
             <p>Transaction Status: <span id="txStatus">-</span></p>
         </div>
-        <div>
-            <button id="viewBalance">Total Value</button>
+        <div class="sponsorInfo">
+            <h3>Sponsors Account Info</h3>
+            <p>This account will be the authroized depositor and will also execute the transaction. Shares will be sent to the signed in account.</p>
+
+            <p>Address: <span id="sponsorAddress">-</span></p>
+            <p>Balance: <span id="sponsorBalance">-</span></p>
+            <p>Yield Token Balance: <span id="balanceDisplay">-</span></p>
         </div>
+    
     </div>
     
     <script type="module" src="/src/app.js"></script>

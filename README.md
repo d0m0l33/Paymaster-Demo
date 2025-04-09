@@ -1,5 +1,3 @@
-
-
 # Alchemist EIP-7702 Paymaster Demo
 
 This application demonstrates EIP-7702 account abstraction and sponsored transactions on the Hoodi public testnet, specifically for interacting with the Alchemix protocol.
@@ -52,25 +50,111 @@ yarn dev
 
 5. Open your browser and navigate to `http://localhost:3000`
 
-## Contract Addresses
+## Local Development Setup
 
-The application interacts with the following contracts on the Hoodi testnet:
+### Contract Setup and Deployment
 
-- **Alchemist V2**: `0x8b8d2eFB5Fc6B016A67B94c89493545D5271C992`
-- **BatchCallAndSponsor**: `0x68545eceD4C6552cDc5AEc36177068D2BE12A101`
-- **Test Yield Token**: `0x703bD932493Ad379075fA8aaC36518A3D6330B88`
+This guide walks you through setting up a local development environment with Anvil forked from the Hoodi testnet.
 
-The `BatchCallAndSponsor` contract allows for EIP7702 batch & sponsored transactions. More [here](https://github.com/quiknode-labs/qn-guide-examples/blob/main/ethereum/eip-7702/src/BatchCallAndSponsor.sol).
+#### 1. Run Local Fork
 
-## Hoodi Public Testnet Information
+Pull the latest Alchemix Repo and navigate to the root directory:
+
+```bash
+# Start Anvil with Hoodi fork
+anvil --fork-url https://rpc.hoodi.ethpandaops.io/ --hardfork prague --steps-tracing
+```
+
+**Note:** `--code-size-limit` is optional but can be useful if you want to include console logs which may increase contract size.
+
+#### 2. Deploy Modified Alchemist V2
+
+```bash
+# Modify the Alchemist contract
+# Edit src/alchemist/AlchemistV2.sol with new functions
+# (or clear the entire file and paste the modified version)
+
+# Create deployment script
+# Create src/scripts/DeployAlchemix.s.sol and copy contents from src/contracts/DeployAlchemixi.s.sol
+
+# Deploy the modified Alchemist
+forge script src/scripts/DeployAlchemixV2Hoodi.s.sol --rpc-url http://localhost:8545 --broadcast -vvv
+```
+
+#### 3. Deploy Relayer Contract
+
+```bash
+# Create Relayer contract
+# Create src/test/mocks/Relayer.sol and copy contents from src/contracts/Relayer.sol
+
+# Create deployment script
+# Create src/scripts/DeployRelayer.s.sol and copy contents from src/contracts/DeployRelayer.s.sol
+
+# Deploy the Relayer
+forge script src/scripts/DeployRelayer.s.sol --rpc-url http://localhost:8545 --broadcast -vvv
+```
+
+#### 4. Update Frontend Configuration
+
+Make sure to update the frontend with the deployed addresses:
+
+```javascript
+const ALCHEMIST_ADDRESS = "AlchemistV2 Proxy"; // ALCHEMIST address for testing
+const YIELD_TOKEN_ADDRESS = "test yield token"; // YIELD token for testing 
+const RELAYER_ADDRESS = "Deployed Relayer"; // Relayer address for testing
+```
+
+#### 5. Fund Accounts as Needed
+
+##### Fund Sponsor Account with ETH
+```bash
+cast rpc anvil_setBalance \
+  SPONSOR_ACCOUNT_ADDRESS \
+  0x3635C9ADC5DEA00000 \
+  --rpc-url http://localhost:8545
+```
+
+##### Fund Recipient Account with ETH
+```bash
+cast rpc anvil_setBalance \
+  RECIPIENT_ACCOUNT_ADDRESS \
+  0x3635C9ADC5DEA00000 \
+  --rpc-url http://localhost:8545
+```
+
+##### Fund Sponsor Account with Yield Tokens. Can use the anvil test account private key in the example to run the transaction from.
+```bash
+cast send \
+  YIELD_TOKEN_ADDRESS \
+  "transfer(address,uint256)(bool)" \
+  SPONSOR_ACCOUNT_ADDRESS \
+  100000000000000000000000 \
+  --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 \
+  --rpc-url http://localhost:8545
+```
+
+#### 5. MetaMask Setup
+
+Add network [here](https://hoodi.ethpandaops.io/). You can add it manually with the following configuration:
+
+- **Network Name**: Hoodi Testnet
+- **RPC URL**: `http://localhost:8545`
+- **Chain ID**: 560048
+- **Currency Symbol**: ETH
+- **Block Explorer URL**: `https://hoodi.etherscan.io/`
+
+
+### Debugging Tips
+
+- Use `--steps-tracing` with Anvil to see detailed execution traces
+- When running large contracts with console logging, you may need to add `--code-size-limit`
+- Check transactions in the Anvil logs for detailed error information
+- Use `cast call` to test contract interactions without sending transactions
+
+
+## Public Development Setup
 
 Hoodi is a public testnet for testing EIP-7702 functionality:
-
-- **Chain ID**: 560048
-- **Currency**: ETH (18 decimals)
-- **RPC URL**: `https://rpc.hoodi.ethpandaops.io/`
-- **Block Explorer**: `https://hoodi.etherscan.io/`
-
 ### Adding Hoodi Testnet to MetaMask
 
 Add network [here](https://hoodi.ethpandaops.io/). You can add it manually with the following configuration:
@@ -116,6 +200,17 @@ const hash = await sponsorClient.sendTransaction({
 })
 ```
 
+
+## Contract Addresses
+
+The application can interact with the following contracts on the Hoodi testnet:
+
+- **Alchemist**: `0x7b5Ecee7cB983F0156C17D6b25fED0c69C70571a`
+- **Relayer**: `0xD6b6c4CcE8177051d29d9f436a7262c60541E822`
+- **Yield Token**: `0xB39FCe240fb2855E390C0fCEa4c41938331F5694`
+
+The `Relayer` contract, similar to the `BatchCallAndSponsor`, allows for EIP7702 batch & sponsored transactions. More [here](https://github.com/quiknode-labs/qn-guide-examples/blob/main/ethereum/eip-7702/src/BatchCallAndSponsor.sol).
+
 ## Usage
 
 1. **Connect Wallet**:  
@@ -124,11 +219,19 @@ const hash = await sponsorClient.sendTransaction({
 2. **Direct Deposit**:  
    Enter an amount and click "Deposit" to directly deposit funds to Alchemist from your wallet.
 
-3. **Sponsored Deposit**:  
-   Click "Sponsor Deposit" to create a transaction where the sponsor pays the gas fees.
+3. **Sponsor Deposit**:  
+   Click "Sponsor Deposit" to create a transaction where the sponsor pays the gas fees,
+   deposits yeild tokens and sends signed in user the shares.
+   The sponsor account must be funded for this to work.
 
-4. **View Total Value**:  
-   Click "Total Value" to see your current total value in the Alchemist protocol.
+
+4. **Sponsored Deposit with Smart Account Blocking**:  
+   Click "Sponsor Deposit(Smart Account Blocked)" to create a transaction where the alchemist will block the deposit because the account is an EIP7702 smart account.
+   The sponsor account must be funded for this to be shown.
+
+
+5. **View Total Value**:  
+   Click "Total Value" to see your current total value of shares in the Alchemist protocol.
 
 ## Development
 
@@ -149,8 +252,8 @@ ISC
 
 ## Troubleshooting
 
-- **RPC Errors**: Make sure you're connected to the Hoodi testnet
-- **Transactions** using the default rpc url can take up to two minutes for the UI to recieve messages.
+- **RPC Errors**: Make sure you're connected to the Hoodi testnet local fork/public
+- **Transactions** using the default public rpc url may take up to two minutes for the UI to recieve messages.
 - **Connection Issues**: Check MetaMask is unlocked and connected to the Hoodi network
 
 ## Resources
