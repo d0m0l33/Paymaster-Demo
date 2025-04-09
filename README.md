@@ -185,18 +185,27 @@ This application uses viem's implementation of [EIP-7702](https://eips.ethereum.
 The application uses viem's account abstraction features:
 
 ```javascript
-// Creating authorization with a local account
+// Authorizing sponsor account to execute the relayer contract code in the context of the sponsor account
+
+// The sponsor account is also signing the transaction (this can be any local account)
 const authorization = await sponsorClient.signAuthorization({
-  account: tempAccount,
-  contractAddress: BATCH_CALL_SPONSOR_ADDRESS,
-  data: batchData,
+  account: sponsorClient.account,
+  contractAddress: RELAYER_ADDRESS,
+  exectuor: 'self'
 });
 
 // Sending a transaction with authorization
+
+// 1)  Sending the executeCallData tx to the authorized account executor i.e. sponsor account
+// 2)  The relayer contract function will be called in the context of the sponsor account
+// 3)  During execution on chain, msg.sender will be the EOA previously authorized (Not the original smart contract address). 
+// Since the same EOA sent the transaction, i.e. the sponsor account address, tx.origin will also be the sponsor account address.
+// 4) Someone else could have been authroized, in which case tx.origin would still be the sponsor account address, 
+// but msg.sender would be the another account address.
 const hash = await sponsorClient.sendTransaction({
-  authorizationList: [authorization],
-  data: batchData,
-  to: tempAccount?.address,
+   to: sponsorClient.account.address,
+   data: executeCallData,
+   authorizationList: [authorization],
 })
 ```
 
